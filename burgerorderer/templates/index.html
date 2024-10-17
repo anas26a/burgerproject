@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burger Order</title>
+</head>
+<body>
+    <h1>Order Your Burger</h1>
+    <form id="orderForm">
+        <label for="burgerSelect">Choose your burger:</label>
+        <select id="burgerSelect" name="burger_id" required></select><br><br>
+
+        <label for="customizations">Customizations:</label>
+        <input type="text" id="customizations" name="customizations" placeholder="e.g., no onions, extra cheese"><br><br>
+
+        <button type="submit">Place Order</button>
+    </form>
+
+    <script>
+        // Fetch the menu and populate the dropdown
+        fetch('/menu')
+            .then(response => response.json())
+            .then(menu => {
+                const burgerSelect = document.getElementById('burgerSelect');
+                menu.forEach(item => {
+                    let option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = `${item.name} - $${item.price}`;
+                    burgerSelect.appendChild(option);
+                });
+            });
+
+        // Handle form submission
+        document.getElementById('orderForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const burgerId = document.getElementById('burgerSelect').value;
+            const customizations = document.getElementById('customizations').value.split(',');
+
+            const orderData = {
+                burger_id: burgerId,
+                customizations: customizations.map(c => c.trim()) // Clean up spaces
+            };
+
+            fetch('/order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

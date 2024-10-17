@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen View</title>
+</head>
+<body>
+    <h1>Kitchen Orders</h1>
+    <div id="orders"></div>
+
+    <script>
+        function fetchOrders() {
+            fetch('/orders')
+                .then(response => response.json())
+                .then(data => {
+                    const ordersDiv = document.getElementById('orders');
+                    ordersDiv.innerHTML = '';  // Clear the current orders
+                    data.forEach(order => {
+                        const orderDiv = document.createElement('div');
+                        orderDiv.innerHTML = `
+                            <p><strong>Burger ID:</strong> ${order.burger_id}</p>
+                            <p><strong>Customizations:</strong> ${order.customizations.join(', ')}</p>
+                            <hr>
+                        `;
+                        ordersDiv.appendChild(orderDiv);
+                    });
+                });
+        }
+
+        // Fetch new orders every 5 seconds
+        setInterval(fetchOrders, 5000);
+    </script>
+</body>
+</html>
